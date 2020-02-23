@@ -24,7 +24,7 @@ db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
 
-# TODO: connect to a local postgresql database
+# DONE: connect to a local postgresql database
 SQLALCHEMY_DATABASE_URI = 'postgres://postgres@localhost:5432/fyyurdb'
 
 #----------------------------------------------------------------------------#
@@ -48,7 +48,7 @@ class Venue(db.Model):
     seeking_description = db.Column(db.String())
     shows = db.relationship('Show', backref='Venue', lazy='true')
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # DONE: implement any missing fields, as a database migration using Flask-Migrate
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
@@ -66,9 +66,9 @@ class Artist(db.Model):
     seeking_description = db.Column(db.String())
     shows = db.relationship('Show', backref='Venue', lazy='true')
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
+    # DONE: implement any missing fields, as a database migration using Flask-Migrate
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+# DONE Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 class Show(db.Model):
     __tablename__ = 'Show'
     id = db.Column(db.Integer, primary_key=True)
