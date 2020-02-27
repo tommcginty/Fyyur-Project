@@ -67,7 +67,7 @@ class Artist(db.Model):
     seeking_description = db.Column(db.String())
     #shows = db.relationship('Show', backref='Artist', lazy='true')
 
-    # DONE: implement any missing fields, as a database migration using Flask-Migrate
+# DONE: implement any missing fields, as a database migration using Flask-Migrate
 
 # DONE Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 class Show(db.Model):
@@ -156,7 +156,6 @@ def show_venue(venue_id):
     if venues is None:
         abort(404)
 
-    #data = venues.serialize_with_shows_details
     data = venues
     return render_template('pages/show_venue.html', venue=data)
 
