@@ -114,7 +114,7 @@ def venues():
   for venue in venue_query:
       # TODO: upcoming_shows = venue.shows.filter(Show.start_time > current_time).all()
       if city_and_state == venue.city + venue.state:
-          data[len(data) - 1]["venues"].append({
+          data[len(data) - 1]['venues'].append({
             "id": venue.id,
             "name": venue.name,
             "num_shows": 1 #TODO:len(upcoming_shows)
@@ -137,13 +137,20 @@ def search_venues():
   # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-  response={
-    "count": 1,
-    "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
+  search_term = request.form.get('search_term', '')
+  search = "%{}%".format(search_term)
+  venue_search_query = Venue.query.filter(Venue.name.ilike(search)).all()
+  data = []
+  for venue in venue_search_query:
+    data.append({
+      "id": venue.id,
+      "name": venue.name,
+      "num_shows": 1 #TODO: len(upcoming_shows)
+    })
+
+  response = {
+    "count": len(venue_search_query),
+    "data": data
   }
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
@@ -213,16 +220,29 @@ def delete_venue(venue_id):
 @app.route('/artists')
 def artists():
   # TODO: replace with real data returned from querying the database
-  data=[{
-    "id": 4,
-    "name": "Guns N Petals",
-  }, {
-    "id": 5,
-    "name": "Matt Quevedo",
-  }, {
-    "id": 6,
-    "name": "The Wild Sax Band",
-  }]
+  current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+  artist_query = Artist.query.group_by(Artist.id, Artist.state, Artist.city).order_by(Artist.state, Artist.city).all()
+  city_and_state = ''
+  data = []
+  for artist in artist_query:
+      # TODO: upcoming_shows = arists.shows.filter(Show.start_time > current_time).all()
+      if city_and_state == artist.city + artist.state:
+          data[len(data) - 1]['artists'].append({
+            "id": artist.id,
+            "name": artist.name,
+            "num_shows": 1 #TODO:len(upcoming_shows)
+          })
+      else:
+          city_and_state = artist.city + artist.state
+          data.append({
+            "city": artist.city,
+            "state": artist.state,
+            "venues": [{
+              "id": artist.id,
+              "name": artist.name,
+              "num_shows": 1 #TODO: len(upcoming_shows)
+            }]
+          })
   return render_template('pages/artists.html', artists=data)
 
 @app.route('/artists/search', methods=['POST'])
@@ -408,15 +428,34 @@ def create_artist_form():
 
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
-  # called upon submitting the new artist listing form
-  # TODO: insert form data as a new Venue record in the db, instead
-  # TODO: modify data to be the data object returned from db insertion
-
-  # on successful db insert, flash success
-  flash('Artist ' + request.form['name'] + ' was successfully listed!')
-  # TODO: on unsuccessful db insert, flash an error instead.
-  # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+  error = False
+  form = ArtistForm(request.form)
+  try:
+    new_artist = Artist(
+      name = form.name.data,
+      city = form.city.data,
+      state = form.state.data,
+      phone = form.phone.data,
+      image_link = form.image_link.data,
+      genres = request.form.getlist('genres'),
+      website_link = form.website_link.data,
+      facebook_link = form.facebook_link.data,
+      seeking_venues = form.seeking_venues.data,
+      seeking_description = form.seeking_description.data,
+    )
+    db.session.add(new_artist)
+    db.session.commit()
+  except:
+    error = True
+    flash('An error occurred. Artist ' + request.form['name'] + ' could not be listed.')
+    db.session.rollback()
+    print(sys.exc_info())
+  finally:
+    db.session.close()
+  if not error:
+    flash('Artist ' + request.form['name'] + ' was successfully listed!')
   return render_template('pages/home.html')
+
 
 
 #  Shows
