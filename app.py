@@ -171,19 +171,20 @@ def create_venue_submission():
   # DONE: insert form data as a new Venue record in the db, instead
   # DONE: modify data to be the data object returned from db insertion
   error = False
+  form = VenueForm(request.form)
   try:
     new_venue = Venue(
-      name=request.form['name'],
-      city=request.form['city'],
-      state=request.form['state'],
-      address=request.form['address'],
-      phone=request.form['phone'],
-      image_link=request.form['image_link'],
-      genres=request.form.getlist('genres'),
-      website_link=request.form['website_link'],
-      facebook_link=request.form['facebook_link'],
-      seeking_talent=True if 'seeking_talent' in request.form else False,
-      seeking_description=request.form['seeking_description'],
+      name = form.name.data,
+      city = form.city.data,
+      state = form.state.data,
+      address = form.address.data,
+      phone = form.phone.data,
+      image_link = form.image_link.data,
+      genres = request.form.getlist('genres'),
+      website_link = form.website_link.data,
+      facebook_link = form.facebook_link.data,
+      seeking_talent = form.seeking_talent.data,
+      seeking_description = form.seeking_description.data,
     )
     db.session.add(new_venue)
     db.session.commit()
@@ -370,25 +371,25 @@ def edit_venue_submission(venue_id):
   venue = Venue.query.filter(Venue.id == venue_id).one_or_none()
   error = False
   form = VenueForm(request.form)
-  print(form.seeking_talent.data)
   try:
-    venue.name=form.name.data,
-    venue.city=form.city.data,
-    venue.state=form.state.data,
-    venue.address=form.address.data,
-    venue.phone=form.phone.data,
-    venue.image_link=form.image_link.data,
-    #venue.genres=request.form.getlist('genres'),
-    venue.website_link=form.website_link.data,
-    venue.facebook_link=form.facebook_link.data,
-    venue.seeking_talent=True if 'seeking_talent' in request.form else False,
-    #venue.seeking_description=request.form['seeking_description'],
+    venue.name = form.name.data
+    venue.city = form.city.data
+    venue.state = form.state.data
+    venue.address = form.address.data
+    venue.phone = form.phone.data
+    venue.image_link = form.image_link.data
+    venue.genres = request.form.getlist('genres')
+    venue.website_link = form.website_link.data
+    venue.facebook_link = form.facebook_link.data
+    venue.seeking_talent = form.seeking_talent.data
+    venue.seeking_description = form.seeking_description.data
     db.session.commit()
   except:
     error = True
     flash('An error occurred. Venue ' + request.form['name'] + ' was not edited.')
     db.session.rollback()
     print(sys.exc_info())
+    print(form.errors)
   finally:
     db.session.close()
   if not error:
