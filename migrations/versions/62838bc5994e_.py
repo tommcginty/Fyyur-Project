@@ -22,7 +22,7 @@ def upgrade():
     op.add_column('Artist', sa.Column('seeking_venues', sa.Boolean(), nullable=True))
     op.add_column('Artist', sa.Column('website_link', sa.String(length=120), nullable=True))
     op.add_column('Venue', sa.Column('seeking_description', sa.String(), nullable=True))
-    op.add_column('Venue', sa.Column('seeking_talent', sa.Boolean(), nullable=True))
+    op.add_column('Venue', sa.Column('seeking_talent', sa.Boolean(), nullable=False))
     op.add_column('Venue', sa.Column('website_link', sa.String(length=120), nullable=True))
     # ### end Alembic commands ###
 
