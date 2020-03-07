@@ -29,6 +29,20 @@
 		<p>
 			<i class="fab fa-facebook-f"></i> {% if venue.facebook_link %}<a href="{{ venue.facebook_link }}" target="_blank">{{ venue.facebook_link }}</a>{% else %}No Facebook Link{% endif %}
 		</p>
+		<div>
+			<a href="/venues/{{ venue.id }}/edit">
+				<button class="btn btn-default btn-sm">
+					Edit Venue
+				</button>
+			</a>
+			<button
+				id="delete-venue"
+				data-id="{{ venue.id }}"
+				class="btn btn-default btn-sm"
+			>
+				Delete Venue
+			</button>
+		  </div>
 		{% if venue.seeking_talent %}
 		<div class="seeking">
 			<p class="lead">Currently seeking talent</p>
@@ -74,6 +88,21 @@
 		{% endfor %}
 	</div>
 </section>
+<script>
+	const deleteBtn = document.getElementById('delete-venue')
+	deleteBtn.onclick = function(e) {
+		let result = confirm("Are you sure? This will permanently delete this venue and cancel all booked shows here!");
+		if (result) {
+			const venueId = e.target.dataset['id']
+			fetch('/venues/' + venueId, {
+				method: 'DELETE'
+			})
+			.then(function() {
+	        window.location.href = '/index';
+	})
+		}
+	}
+  </script>
 
 {% endblock %}
 
